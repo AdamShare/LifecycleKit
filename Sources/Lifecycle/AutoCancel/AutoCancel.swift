@@ -132,7 +132,7 @@ extension Subscribers {
         }
 
         public func receive(subscription: Subscription) {
-            lock.lock(); defer { lock.lock() }
+            lock.lock(); defer { lock.unlock() }
 
             self.subscription = subscription
 
@@ -143,14 +143,14 @@ extension Subscribers {
         }
 
         public func receive(_ input: Input) -> Subscribers.Demand {
-            lock.lock(); defer { lock.lock() }
+            lock.lock(); defer { lock.unlock() }
 
             receivers?.receiveValue?(input)
             return .unlimited
         }
 
         public func receive(completion: Subscribers.Completion<Failure>) {
-            lock.lock(); defer { lock.lock() }
+            lock.lock(); defer { lock.unlock() }
 
             receivers?.receiveCompletion?(completion)
 
@@ -165,7 +165,7 @@ extension Subscribers {
         }
 
         public func cancel() {
-            lock.lock(); defer { lock.lock() }
+            lock.lock(); defer { lock.unlock() }
 
             guard subscription != nil else {
                 clear()
