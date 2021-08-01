@@ -30,7 +30,7 @@ public protocol ViewModelView: View {
 /// Convenience protocol for a `View ` with only a `ViewModel` dependency.
 public protocol ViewModelControllerView: View {
     /// `ViewLifecycleOwner` view controller.
-    associatedtype Controller: ObservableObject, ViewLifecycleOwner
+    associatedtype Controller: ViewLifecycleOwner
     
     /// `ObservableObject` view model to bind to the `View` .
     associatedtype Model: ObservableObject

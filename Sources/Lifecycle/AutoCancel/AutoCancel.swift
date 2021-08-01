@@ -110,25 +110,11 @@ public struct AutoCancel<P: Publisher> {
 extension Subscribers {
     final class RetainedSink<Input, Failure: Error>: Subscriber, Cancellable {
         public let combineIdentifier: CombineIdentifier = CombineIdentifier()
-
+        
+        private let lock: NSRecursiveLock = .init()
+        
         private var subscription: Subscription?
-
-        /// Make sure everything is cleared to avoid retain cycles.
-        func clear() {
-            subscription?.cancel()
-            subscription = nil
-            cancelPublisherCancellable?.cancel()
-            cancelPublisherCancellable = nil
-            receiveValue = nil
-            receiveCompletion = nil
-            receiveFailure = nil
-            receiveFinished = nil
-            receiveCancel = nil
-            cancelPublisher = nil
-        }
-
         private var cancelPublisherCancellable: Cancellable?
-
         private var receiveValue: ((Input) -> Void)?
         private var receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)?
         private var receiveFailure: ((Failure) -> Void)?
@@ -150,7 +136,9 @@ extension Subscribers {
             self.cancelPublisher = cancelPublisher
         }
 
-        func receive(subscription: Subscription) {
+        public func receive(subscription: Subscription) {
+            lock.lock(); defer { lock.lock() }
+            
             self.subscription = subscription
 
             cancelPublisherCancellable = cancelPublisher?.sink(receiveFinished: cancel,
@@ -159,12 +147,16 @@ extension Subscribers {
             self.subscription?.request(.unlimited)
         }
 
-        func receive(_ input: Input) -> Subscribers.Demand {
+        public func receive(_ input: Input) -> Subscribers.Demand {
+            lock.lock(); defer { lock.lock() }
+            
             receiveValue?(input)
             return .unlimited
         }
 
-        func receive(completion: Subscribers.Completion<Failure>) {
+        public func receive(completion: Subscribers.Completion<Failure>) {
+            lock.lock(); defer { lock.lock() }
+            
             receiveCompletion?(completion)
 
             switch completion {
@@ -177,13 +169,29 @@ extension Subscribers {
             clear()
         }
 
-        func cancel() {
+        public func cancel() {
+            lock.lock(); defer { lock.lock() }
+            
             guard subscription != nil else {
                 clear()
                 return
             }
             receiveCancel?()
             clear()
+        }
+        
+        /// Make sure everything is cleared to avoid retain cycles.
+        private func clear() {
+            subscription?.cancel()
+            subscription = nil
+            cancelPublisherCancellable?.cancel()
+            cancelPublisherCancellable = nil
+            receiveValue = nil
+            receiveCompletion = nil
+            receiveFailure = nil
+            receiveFinished = nil
+            receiveCancel = nil
+            cancelPublisher = nil
         }
     }
 }
