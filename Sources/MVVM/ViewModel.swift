@@ -31,10 +31,10 @@ public protocol ViewModelView: View {
 public protocol ViewModelControllerView: View {
     /// `ViewLifecycleOwner` view controller.
     associatedtype Controller: ViewLifecycleOwner
-    
+
     /// `ObservableObject` view model to bind to the `View` .
     associatedtype Model: ObservableObject
-    
+
     /// Initializes with an lifecycle owner controller and observable object.
     init(controller: Controller, model: Model)
 }

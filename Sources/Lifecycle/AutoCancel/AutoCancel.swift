@@ -28,7 +28,7 @@ public extension Publisher {
     func autoCancel<P: Publisher>(_ lifecycleState: P, when states: LifecycleStateOptions = .notActive) -> AutoCancel<Self> where P.Output == LifecycleState {
         return AutoCancel(source: self, cancelPublisher: lifecycleState.filter(states.contains(state:)).map { _ in () }.replaceError(with: ()).mapError().eraseToAnyPublisher())
     }
-    
+
     func published<T: LifecyclePublisher>(to keyPath: ReferenceWritableKeyPath<T, Output>, on: T) {
         receive(on: Schedulers.main)
             .autoCancel(on)
@@ -63,12 +63,12 @@ public struct AutoCancel<P: Publisher> {
                      receiveFinished: (() -> Void)? = nil,
                      receiveValue: ((P.Output) -> Void)? = nil) -> Cancellable
     {
-        let retainedSink = Subscribers.RetainedSink(receiveValue: receiveValue,
+        let retainedSink = Subscribers.RetainedSink(cancelPublisher: cancelPublisher,
+                                                    receiveValue: receiveValue,
                                                     receiveCompletion: receiveCompletion,
                                                     receiveFailure: receiveFailure,
                                                     receiveFinished: receiveFinished,
-                                                    receiveCancel: receiveCancel,
-                                                    cancelPublisher: cancelPublisher)
+                                                    receiveCancel: receiveCancel)
         source.subscribe(retainedSink)
         return retainedSink
     }
@@ -110,60 +110,55 @@ public struct AutoCancel<P: Publisher> {
 extension Subscribers {
     final class RetainedSink<Input, Failure: Error>: Subscriber, Cancellable {
         public let combineIdentifier: CombineIdentifier = CombineIdentifier()
-        
-        private let lock: NSRecursiveLock = .init()
-        
-        private var subscription: Subscription?
-        private var cancelPublisherCancellable: Cancellable?
-        private var receiveValue: ((Input) -> Void)?
-        private var receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)?
-        private var receiveFailure: ((Failure) -> Void)?
-        private var receiveFinished: (() -> Void)?
-        private var receiveCancel: (() -> Void)?
-        private var cancelPublisher: RelayPublisher<Void>?
 
-        init(receiveValue: ((Input) -> Void)? = nil,
-             receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)? = nil,
-             receiveFailure: ((Failure) -> Void)? = nil,
-             receiveFinished: (() -> Void)? = nil,
-             receiveCancel: (() -> Void)? = nil,
-             cancelPublisher: RelayPublisher<Void>? = nil) {
-            self.receiveValue = receiveValue
-            self.receiveCompletion = receiveCompletion
-            self.receiveFailure = receiveFailure
-            self.receiveFinished = receiveFinished
-            self.receiveCancel = receiveCancel
-            self.cancelPublisher = cancelPublisher
+        private let lock: NSRecursiveLock = .init()
+
+        private var cancelPublisherCancellable: Cancellable?
+        private var subscription: Subscription?
+        private var receivers: Receivers?
+
+        init(cancelPublisher: RelayPublisher<Void>?,
+             receiveValue: ((Input) -> Void)?,
+             receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)?,
+             receiveFailure: ((Failure) -> Void)?,
+             receiveFinished: (() -> Void)?,
+             receiveCancel: (() -> Void)?) {
+            receivers = Receivers(cancelPublisher: cancelPublisher,
+                                  receiveValue: receiveValue,
+                                  receiveCompletion: receiveCompletion,
+                                  receiveFailure: receiveFailure,
+                                  receiveFinished: receiveFinished,
+                                  receiveCancel: receiveCancel)
         }
 
         public func receive(subscription: Subscription) {
             lock.lock(); defer { lock.lock() }
-            
+
             self.subscription = subscription
 
-            cancelPublisherCancellable = cancelPublisher?.sink(receiveFinished: cancel,
-                                                               receiveValue: cancel)
+            cancelPublisherCancellable = receivers?.cancelPublisher?.sink(receiveFinished: cancel,
+                                                                          receiveValue: cancel)
 
             self.subscription?.request(.unlimited)
         }
 
         public func receive(_ input: Input) -> Subscribers.Demand {
             lock.lock(); defer { lock.lock() }
-            
-            receiveValue?(input)
+
+            receivers?.receiveValue?(input)
             return .unlimited
         }
 
         public func receive(completion: Subscribers.Completion<Failure>) {
             lock.lock(); defer { lock.lock() }
-            
-            receiveCompletion?(completion)
+
+            receivers?.receiveCompletion?(completion)
 
             switch completion {
             case let .failure(error):
-                receiveFailure?(error)
+                receivers?.receiveFailure?(error)
             case .finished:
-                receiveFinished?()
+                receivers?.receiveFinished?()
             }
 
             clear()
@@ -171,27 +166,31 @@ extension Subscribers {
 
         public func cancel() {
             lock.lock(); defer { lock.lock() }
-            
+
             guard subscription != nil else {
                 clear()
                 return
             }
-            receiveCancel?()
+            receivers?.receiveCancel?()
             clear()
         }
-        
+
         /// Make sure everything is cleared to avoid retain cycles.
         private func clear() {
             subscription?.cancel()
             subscription = nil
             cancelPublisherCancellable?.cancel()
             cancelPublisherCancellable = nil
-            receiveValue = nil
-            receiveCompletion = nil
-            receiveFailure = nil
-            receiveFinished = nil
-            receiveCancel = nil
-            cancelPublisher = nil
+            receivers = nil
+        }
+
+        struct Receivers {
+            let cancelPublisher: RelayPublisher<Void>?
+            let receiveValue: ((Input) -> Void)?
+            let receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)?
+            let receiveFailure: ((Failure) -> Void)?
+            let receiveFinished: (() -> Void)?
+            let receiveCancel: (() -> Void)?
         }
     }
 }
