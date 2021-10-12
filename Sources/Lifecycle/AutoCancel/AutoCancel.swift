@@ -113,6 +113,9 @@ extension Subscribers {
 
         private let lock: NSRecursiveLock = .init()
 
+        /// Cleanup can cause side effects such as triggering a deallocation lifecycle state that cancels.
+        private var isActive: Bool = true
+
         private var cancelPublisherCancellable: Cancellable?
         private var subscription: Subscription?
         private var receivers: Receivers?
@@ -133,6 +136,7 @@ extension Subscribers {
 
         public func receive(subscription: Subscription) {
             lock.lock(); defer { lock.unlock() }
+            guard isActive else { return }
 
             self.subscription = subscription
 
@@ -144,6 +148,7 @@ extension Subscribers {
 
         public func receive(_ input: Input) -> Subscribers.Demand {
             lock.lock(); defer { lock.unlock() }
+            guard isActive else { return }
 
             receivers?.receiveValue?(input)
             return .unlimited
@@ -151,6 +156,7 @@ extension Subscribers {
 
         public func receive(completion: Subscribers.Completion<Failure>) {
             lock.lock(); defer { lock.unlock() }
+            guard isActive else { return }
 
             receivers?.receiveCompletion?(completion)
 
@@ -166,6 +172,7 @@ extension Subscribers {
 
         public func cancel() {
             lock.lock(); defer { lock.unlock() }
+            guard isActive else { return }
 
             guard subscription != nil else {
                 clear()
@@ -177,6 +184,8 @@ extension Subscribers {
 
         /// Make sure everything is cleared to avoid retain cycles.
         private func clear() {
+            isActive = false
+
             subscription?.cancel()
             subscription = nil
             cancelPublisherCancellable?.cancel()
