@@ -148,7 +148,7 @@ extension Subscribers {
 
         public func receive(_ input: Input) -> Subscribers.Demand {
             lock.lock(); defer { lock.unlock() }
-            guard isActive else { return }
+            guard isActive else { return .unlimited }
 
             receivers?.receiveValue?(input)
             return .unlimited

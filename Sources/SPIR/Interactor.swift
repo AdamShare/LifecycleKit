@@ -122,7 +122,7 @@ open class PresentableInteractor<PresenterType>: Interactor, PresentableInteract
     }
 }
 
-public extension PresentableInteractable where Self: Presentable {
+public extension PresentableInteractable {
     var presentable: Presentable {
         return self
     }
