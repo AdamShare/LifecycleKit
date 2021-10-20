@@ -21,7 +21,7 @@ Inspired by [RIBs](https://github.com/uber/ribs) and [Android Jetpack Lifecycle]
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/ashare80/LifecycleKit.git", .upToNextMajor(from: "0.2.0"))
+    .package(url: "https://github.com/ashare80/LifecycleKit.git", .upToNextMajor(from: "0.3.6"))
 ]
 ```
 
