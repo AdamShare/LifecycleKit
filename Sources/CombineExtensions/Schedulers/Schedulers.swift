@@ -25,19 +25,24 @@ public enum Schedulers {
     public static var asyncMain: DispatchQueue.Scheduler { .asyncMain }
 
     /// In case `schedule` methods are called from `DispatchQueue.userInteractive`, it will perform action immediately without scheduling.
-    public static var userInteractive: DispatchQueue.Scheduler { .userInteractive }
+    public static func userInteractive(file: StaticString = #fileID, line: UInt = #line) -> DispatchQueue.Scheduler {  DispatchQueue.Scheduler.userInteractive(file: file, line: line)
+    }
 
     /// In case `schedule` methods are called from `DispatchQueue.userInitiated`, it will perform action immediately without scheduling.
-    public static var userInitiated: DispatchQueue.Scheduler { .userInitiated }
+    public static func userInitiated(file: StaticString = #fileID, line: UInt = #line) -> DispatchQueue.Scheduler { DispatchQueue.Scheduler.userInitiated(file: file, line: line)
+    }
 
     /// In case `schedule` methods are called from `DispatchQueue.default`, it will perform action immediately without scheduling.
-    public static var `default`: DispatchQueue.Scheduler { .default }
+    public static func `default`(file: StaticString = #fileID, line: UInt = #line) -> DispatchQueue.Scheduler { DispatchQueue.Scheduler.default(file: file, line: line)
+    }
 
     /// In case `schedule` methods are called from `DispatchQueue.utility`, it will perform action immediately without scheduling.
-    public static var utility: DispatchQueue.Scheduler { .utility }
+    public static func utility(file: StaticString = #fileID, line: UInt = #line) -> DispatchQueue.Scheduler { DispatchQueue.Scheduler.utility(file: file, line: line)
+    }
 
     /// In case `schedule` methods are called from `DispatchQueue.background`, it will perform action immediately without scheduling.
-    public static var background: DispatchQueue.Scheduler { .background }
+    public static func background(file: StaticString = #fileID, line: UInt = #line) -> DispatchQueue.Scheduler { DispatchQueue.Scheduler.background(file: file, line: line)
+    }
 }
 
 public extension DispatchQueue {
@@ -51,19 +56,29 @@ public extension DispatchQueue {
         public static let asyncMain: Scheduler = .init(.main, alwaysAsync: true)
 
         /// In case `schedule` methods are called from `DispatchQueue.userInteractive`, it will perform action immediately without scheduling.
-        public static let userInteractive: Scheduler = .init(.userInteractive)
+        public static func userInteractive(file: StaticString = #fileID, line: UInt = #line) -> Scheduler {
+            Scheduler(DispatchQueue.userInteractive(file: file, line: line))
+        }
 
         /// In case `schedule` methods are called from `DispatchQueue.userInitiated`, it will perform action immediately without scheduling.
-        public static let userInitiated: Scheduler = .init(.userInitiated)
+        public static func userInitiated(file: StaticString = #fileID, line: UInt = #line) -> Scheduler {
+            Scheduler(DispatchQueue.userInitiated(file: file, line: line))
+        }
 
         /// In case `schedule` methods are called from `DispatchQueue.default`, it will perform action immediately without scheduling.
-        public static let `default`: Scheduler = .init(.default)
+        public static func `default`(file: StaticString = #fileID, line: UInt = #line) -> Scheduler {
+            Scheduler(DispatchQueue.default(file: file, line: line))
+        }
 
         /// In case `schedule` methods are called from `DispatchQueue.utility`, it will perform action immediately without scheduling.
-        public static let utility: Scheduler = .init(.utility)
+        public static func utility(file: StaticString = #fileID, line: UInt = #line) -> Scheduler {
+            Scheduler(DispatchQueue.utility(file: file, line: line))
+        }
 
         /// In case `schedule` methods are called from `DispatchQueue.background`, it will perform action immediately without scheduling.
-        public static let background: Scheduler = .init(.background)
+        public static func background(file: StaticString = #fileID, line: UInt = #line) -> Scheduler {
+            Scheduler(DispatchQueue.background(file: file, line: line))
+        }
 
         public typealias SchedulerOptions = Never
         public typealias SchedulerTimeType = Foundation.DispatchQueue.SchedulerTimeType

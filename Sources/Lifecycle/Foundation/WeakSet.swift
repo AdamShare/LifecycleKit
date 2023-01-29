@@ -20,7 +20,7 @@ import Foundation
 /// - warning: Element must conform to `AnyObject`.
 public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConvertible {
 
-    private typealias Key = AnyObject
+    private typealias Key = NSNumber
     private typealias Value = AnyObject
 
     /// Returns an array with a strong reference to elements.
@@ -37,7 +37,7 @@ public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConv
         asArray.count
     }
 
-    private var storage: NSMapTable<Key, Value> = .strongToWeakObjects()
+    private var storage = NSMapTable<Key, Value>.strongToWeakObjects()
 
     public init(arrayLiteral elements: Element...) {
         for element in elements {
@@ -59,11 +59,6 @@ public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConv
     }
 
     public mutating func formUnion<T>(_ other: WeakSet<T>) {
-        objc_sync_enter(storage); defer { objc_sync_exit(storage) }
-        if !isKnownUniquelyReferenced(&storage) {
-            storage = storageCopy()
-        }
-
         let enumerator = other.storage.objectEnumerator()
         while let object = enumerator?.nextObject() {
             if let object = object as? Element {
@@ -73,11 +68,19 @@ public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConv
     }
 
     public mutating func insert(_ element: Element) {
-        objc_sync_enter(storage); defer { objc_sync_exit(storage) }
-        if !isKnownUniquelyReferenced(&storage) {
-            storage = storageCopy()
-        }
+        copyStorageIfNeeded()
         insertToStorage(object: element)
+    }
+    
+    private mutating func copyStorageIfNeeded() {
+        if !isKnownUniquelyReferenced(&storage) {
+            let copy = NSMapTable<Key, Value>.strongToWeakObjects()
+            for value in storage.dictionaryRepresentation().values {
+                let key = keyForElement(value)
+                copy.setObject(storage.object(forKey: key), forKey: key)
+            }
+            storage = copy
+        }
     }
 
     private func insertToStorage(object: Element) {
@@ -85,24 +88,20 @@ public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConv
     }
 
     public mutating func removeAll() {
-        objc_sync_enter(storage); defer { objc_sync_exit(storage) }
         storage = .strongToWeakObjects()
     }
 
     public mutating func remove(_ element: Element) {
-        objc_sync_enter(storage); defer { objc_sync_exit(storage) }
-        if !isKnownUniquelyReferenced(&storage) {
-            storage = storageCopy()
-        }
+        copyStorageIfNeeded()
         storage.removeObject(forKey: keyForElement(element))
     }
 
     private func keyForElement(_ element: Element) -> Key {
         return NSNumber(value: ObjectIdentifier(element as AnyObject).hashValue)
     }
-
-    private func storageCopy() -> NSMapTable<Key, Value> {
-        storage.copy() as? NSMapTable<Key, Value> ?? .strongToWeakObjects()
+    
+    private func keyForElement<T: AnyObject>(_ element: T) -> Key {
+        return NSNumber(value: ObjectIdentifier(element as AnyObject).hashValue)
     }
 
     public var debugDescription: String {

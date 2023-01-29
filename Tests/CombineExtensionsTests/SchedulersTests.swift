@@ -44,26 +44,46 @@ final class SchedulersTests: XCTestCase {
         }
 
         var schedulers: [CombineExtensions.DispatchQueue.Scheduler] = [
-            .userInteractive,
-            .userInitiated,
-            .default,
-            .utility,
-            .background,
+            .userInteractive(),
+            .userInitiated(),
+            .default(),
+            .utility(),
+            .background(),
         ]
         schedulers.forEach(expectSync)
 
         func expectAsync(scheduler: CombineExtensions.DispatchQueue.Scheduler) {
-            var called = false
-            let cancellable = Just(())
-                .receive(on: scheduler)
-                .sink(receiveValue: {
-                    called = true
-                })
-            XCTAssertFalse(called)
-            cancellable.cancel()
+                var called = false
+                let cancellable = Just(())
+                    .receive(on: scheduler)
+                    .sink(receiveValue: {
+                        Thread.sleep(forTimeInterval: 1)
+                        called = true
+                    })
+                XCTAssertFalse(called)
+                cancellable.cancel()
         }
 
         schedulers.append(.asyncMain)
         schedulers.forEach(expectAsync)
+    }
+    
+    func testSchedulerConcurrency() {
+        let e = self.expectation(description: "Expect ordered calls to concurrent queue backed scheduler")
+        var values: [Int] = []
+        let startingValues: [Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        let cancellable = startingValues
+            .publisher
+            .receive(on: Schedulers.default())
+            .sink(receiveValue: { value in
+                values.append(value)
+                if values.count == 10 {
+                    XCTAssertEqual(startingValues, values)
+                    e.fulfill()
+                }
+            })
+      
+        self.waitForExpectations(timeout: 10.0)
+        cancellable.cancel()
     }
 }

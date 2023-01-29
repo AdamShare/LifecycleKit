@@ -18,29 +18,35 @@ import Combine
 import Foundation
 
 public struct DispatchQueue: DispatchQueueContext, Scheduler {
-
+    static let reverseDNSPrefix = "com.lifecyclekit."
+    
     /// `DispatchQueue.main` underlying queue.
     public static let main = DispatchQueue(backingQueue: Foundation.DispatchQueue.main)
 
-    /// `DispatchQueue.init(qos: .userInteractive)` underlying queue.
-    public static let userInteractive = DispatchQueue(backingQueue: Foundation.DispatchQueue(label: "com.lifecyclekit.userinteractive",
-                                                                                             qos: .userInteractive))
+    /// `DispatchQueue(qos: .userInteractive)` underlying queue.
+    public static func userInteractive(file: StaticString = #fileID, line: UInt = #line) -> DispatchQueue {
+        DispatchQueue(label: reverseDNSPrefix + "\(file):\(line)", qualityOfService: .userInteractive)
+    }
 
-    /// `DispatchQueue.init(qos: .userInitiated)` underlying queue.
-    public static let userInitiated = DispatchQueue(backingQueue: Foundation.DispatchQueue(label: "com.lifecyclekit.userInitiated",
-                                                                                           qos: .userInitiated))
+    /// `DispatchQueue(qos: .userInitiated)` underlying queue.
+    public static func userInitiated(file: StaticString = #fileID, line: UInt = #line) -> DispatchQueue {
+        DispatchQueue(label: reverseDNSPrefix + "\(file):\(line)", qualityOfService: .userInitiated)
+    }
 
-    /// `DispatchQueue.init(qos: .default)` underlying queue.
-    public static let `default` = DispatchQueue(backingQueue: Foundation.DispatchQueue(label: "com.lifecyclekit.default",
-                                                                                       qos: .default))
+    /// `DispatchQueue(qos: .default)` underlying queue.
+    public static func `default`(file: StaticString = #fileID, line: UInt = #line) -> DispatchQueue {
+        DispatchQueue(label: reverseDNSPrefix + "\(file):\(line)", qualityOfService: .default)
+    }
 
-    /// `DispatchQueue.init(qos: .utility)` underlying queue.
-    public static let utility = DispatchQueue(backingQueue: Foundation.DispatchQueue(label: "com.lifecyclekit.utility",
-                                                                                     qos: .utility))
+    /// `DispatchQueue(qos: .utility)` underlying queue.
+    public static func utility(file: StaticString = #fileID, line: UInt = #line) -> DispatchQueue {
+        DispatchQueue(label: reverseDNSPrefix + "\(file):\(line)", qualityOfService: .utility)
+    }
 
-    /// `DispatchQueue.init(qos: .background)` underlying queue.
-    public static let background = DispatchQueue(backingQueue: Foundation.DispatchQueue(label: "com.lifecyclekit.background",
-                                                                                        qos: .background))
+    /// `DispatchQueue(qos: .background)` underlying queue.
+    public static func background(file: StaticString = #fileID, line: UInt = #line) -> DispatchQueue {
+        DispatchQueue(label: reverseDNSPrefix + "\(file):\(line)", qualityOfService: .background)
+    }
 
     /// The quality of service, or the execution priority, to apply to tasks. From highest (`userInteractive`) to lowest (`background`).
     public enum QualityOfService {

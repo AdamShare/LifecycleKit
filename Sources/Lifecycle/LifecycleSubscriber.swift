@@ -41,6 +41,10 @@ public protocol LifecycleSubscriber: AnyObject {
 public extension ScopeLifecycle {
     /// Binds to lifecycle states receiving on main thread.
     func subscribe(_ subscriber: LifecycleSubscriber) {
+        #if DEBUG
+        assert(Thread.isMainThread, "Subscribe from main thread only.")
+        #endif
+        
         if subscribers.contains(subscriber) {
             assertionFailure("Binding to \(subscriber) that has already been subscribes to. \(subscribers)")
         }
