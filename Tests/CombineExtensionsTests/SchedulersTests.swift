@@ -19,7 +19,7 @@ import Combine
 import XCTest
 
 final class SchedulersTests: XCTestCase {
-    func testSchedulersSync() {
+    @MainActor func testSchedulersSync() {
         syncMain {
             let e = self.expectation(description: "Expect sink call immediately")
             _ = Just(())
@@ -67,8 +67,8 @@ final class SchedulersTests: XCTestCase {
         schedulers.append(.asyncMain)
         schedulers.forEach(expectAsync)
     }
-    
-    func testSchedulerConcurrency() {
+
+    @MainActor func testSchedulerConcurrency() {
         let e = self.expectation(description: "Expect ordered calls to concurrent queue backed scheduler")
         var values: [Int] = []
         let startingValues: [Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -82,8 +82,8 @@ final class SchedulersTests: XCTestCase {
                     e.fulfill()
                 }
             })
-      
-        self.waitForExpectations(timeout: 10.0)
+
+        wait(for: [e], timeout: 10.0)
         cancellable.cancel()
     }
 }

@@ -22,22 +22,23 @@ import SwiftUI
 import XCTest
 
 final class PresenterTests: XCTestCase {
-    private let viewLifecycle = ViewLifecycle()
 
-    func testPresenter() {
+    @MainActor func testPresenter() {
+        let viewLifecycle = ViewLifecycle()
         let presenter = TestPresenter(viewLifecycle: viewLifecycle)
-        testPresenterBinding(presenter: presenter)
+        testPresenterBinding(presenter: presenter, viewLifecycle: viewLifecycle)
         XCTAssertTrue(presenter.viewable is ViewProvider<ModifiedContent<TestPresenter.ContentView, TrackingViewModifier>>)
     }
 
-    func testInteractablePresenter() {
+    @MainActor func testInteractablePresenter() {
+        let viewLifecycle = ViewLifecycle()
         let interactablePresenter = TestInteractablePresenter(viewLifecycle: viewLifecycle)
-        testPresenterBinding(presenter: interactablePresenter)
+        testPresenterBinding(presenter: interactablePresenter, viewLifecycle: viewLifecycle)
         XCTAssertTrue(viewLifecycle.scopeLifecycle === interactablePresenter.scopeLifecycle)
         XCTAssertTrue(interactablePresenter.viewable is ViewProvider<ModifiedContent<TestView<TestInteractablePresenter>, TrackingViewModifier>>)
     }
 
-    private func testPresenterBinding<PresenterType: Presenting & ViewPresentable>(presenter: PresenterType) {
+    @MainActor private func testPresenterBinding<PresenterType: Presenting & ViewPresentable>(presenter: PresenterType, viewLifecycle: ViewLifecycle) {
         XCTAssertEqual(presenter.viewLifecycle, viewLifecycle)
         XCTAssertTrue(viewLifecycle.subscribers.contains(presenter))
     }

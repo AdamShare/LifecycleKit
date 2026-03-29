@@ -22,7 +22,7 @@ import SwiftUI
 import XCTest
 
 final class ScopeTests: XCTestCase {
-    func testViewType() {
+    @MainActor func testViewType() {
         __DependencyProviderRegistry.instance.registerDependencyProviderFactory(for: "^->TestComponent") { component in
             return EmptyDependencyProvider(component: component)
         }

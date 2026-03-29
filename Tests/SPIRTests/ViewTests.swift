@@ -21,7 +21,7 @@ import SwiftUI
 import XCTest
 
 final class ViewTests: XCTestCase {
-    func testPresenterView() {
+    @MainActor func testPresenterView() {
         XCTAssertTrue(TestPresenter().viewable is ViewProvider<ModifiedContent<TestPresenter.ContentView, TrackingViewModifier>>)
     }
 }

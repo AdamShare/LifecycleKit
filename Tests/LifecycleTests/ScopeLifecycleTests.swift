@@ -21,7 +21,7 @@ import Foundation
 import XCTest
 
 final class ScopeLifecycleTests: XCTestCase {
-    func testLifecycleState() {
+    @MainActor func testLifecycleState() {
         var events: [Subscribers.Event<LifecycleState, Never>] = []
 
         let cancellable: Cancellable = autoreleasepool {

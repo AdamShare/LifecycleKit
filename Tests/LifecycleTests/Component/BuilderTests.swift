@@ -19,14 +19,14 @@ import Foundation
 import XCTest
 
 final class BuilderTests: XCTestCase {
-    func testAnyBuilderAutoClosure() {
+    @MainActor func testAnyBuilderAutoClosure() {
         var string = ""
         let builder = AnyBuilder { string }
         string = "test"
         XCTAssertEqual(builder.build(), "test")
     }
 
-    func testAnyDynamicBuilder() {
+    @MainActor func testAnyDynamicBuilder() {
         XCTAssertEqual(AnyDynamicBuilder { test in test }.build("test"), "test")
     }
 }

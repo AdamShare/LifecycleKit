@@ -21,17 +21,17 @@ import Foundation
 import XCTest
 
 final class RouterTests: XCTestCase {
-    let interactor = TestInteractor()
 
-    func testRouterBinding() {
+    @MainActor func testRouterBinding() {
+        let interactor = TestInteractor()
         let router = Router(interactor: interactor)
         XCTAssertTrue(router.scopeLifecycle.subscribers.contains(router))
     }
 
     #if !os(macOS)
-        let presenter = LifecycleViewController()
-
-        func testPresentableRouterBinding() {
+        @MainActor func testPresentableRouterBinding() {
+            let interactor = TestInteractor()
+            let presenter = LifecycleViewController()
             let router = TestPresentableRouter(interactor: interactor,
                                                viewController: presenter)
             XCTAssertTrue(router.scopeLifecycle.subscribers.contains(router))

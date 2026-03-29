@@ -22,7 +22,7 @@ import XCTest
 
 final class InteractorTests: XCTestCase {
 
-    func testInteractor() {
+    @MainActor func testInteractor() {
         let interactor = TestInteractor()
         let router =  Router(interactor: interactor)
         XCTAssertEqual(interactor.scopeLifecycle, router.scopeLifecycle)
@@ -73,9 +73,9 @@ final class InteractorTests: XCTestCase {
     }
 
     #if !os(macOS)
-        private let presenter = LifecycleViewController()
+        private lazy var presenter = LifecycleViewController()
 
-        func testPresentableInteractor() {
+        @MainActor func testPresentableInteractor() {
             let interactor = TestPresentableInteractor(presenter: presenter)
             XCTAssertNil(interactor.scopeLifecycle)
             XCTAssertNil(presenter.viewLifecycle.scopeLifecycle)

@@ -19,7 +19,7 @@ import Foundation
 import XCTest
 
 final class LifecycleOwnerTests: XCTestCase {
-    func testBind() {
+    @MainActor func testBind() {
         let lifecycleOwner = TestLifecycleOwner()
 
         lifecycleOwner.activate()
@@ -27,7 +27,7 @@ final class LifecycleOwnerTests: XCTestCase {
         XCTAssertEqual(lifecycleOwner.scopeLifecycle.owner as? TestLifecycleOwner, lifecycleOwner)
     }
 
-    func testAddChild() {
+    @MainActor func testAddChild() {
         let parent = TestLifecycleOwner()
         let child = TestLifecycleOwner()
 
@@ -88,7 +88,7 @@ final class LifecycleOwnerTests: XCTestCase {
         XCTAssertEqual(child.didBecomeInactiveCount, 2)
     }
 
-    func testAddParentAsChild_asserts() {
+    @MainActor func testAddParentAsChild_asserts() {
         let parent = TestLifecycleOwner()
 
         expectAssert {
@@ -96,7 +96,7 @@ final class LifecycleOwnerTests: XCTestCase {
         }
     }
 
-    func testAddChildAsChild_asserts() {
+    @MainActor func testAddChildAsChild_asserts() {
         let parent = TestLifecycleOwner()
         let child = TestLifecycleOwner()
 
@@ -111,7 +111,7 @@ final class LifecycleOwnerTests: XCTestCase {
         }
     }
 
-    func testDuplicateOwner_asserts() {
+    @MainActor func testDuplicateOwner_asserts() {
         let scopeLifecycle = ScopeLifecycle()
         let owner = TestLifecycleOwner(scopeLifecycle: scopeLifecycle)
         owner.activate()
@@ -124,7 +124,7 @@ final class LifecycleOwnerTests: XCTestCase {
         XCTAssertNotNil(owner)
     }
 
-    func testReleasedOwner() {
+    @MainActor func testReleasedOwner() {
         let scopeLifecycle = ScopeLifecycle()
 
         autoreleasepool {
@@ -140,14 +140,14 @@ final class LifecycleOwnerTests: XCTestCase {
         XCTAssertEqual(owner, scopeLifecycle.owner as! TestLifecycleOwner)
     }
 
-    func testBindAgain_asserts() {
+    @MainActor func testBindAgain_asserts() {
         let parent = TestLifecycleOwner()
         expectAssertionFailure {
             parent.scopeLifecycle.subscribe(parent)
         }
     }
 
-    func testScopeLifecycleDependent() {
+    @MainActor func testScopeLifecycleDependent() {
         let weakLifecycleOwner = ScopeLifecycleDependent(scopeLifecycle: ScopeLifecycle())
 
         XCTAssertNil(weakLifecycleOwner.scopeLifecycle)

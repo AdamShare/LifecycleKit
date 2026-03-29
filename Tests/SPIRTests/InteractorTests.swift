@@ -21,15 +21,15 @@ import Foundation
 import XCTest
 
 final class InteractorTests: XCTestCase {
-    private let presenter = TestPresenter()
-    private let scopeLifecycle = ScopeLifecycle()
 
-    func testInteractor() {
+    @MainActor func testInteractor() {
+        let scopeLifecycle = ScopeLifecycle()
         let interactor = Interactor(scopeLifecycle: scopeLifecycle)
         XCTAssertEqual(interactor.scopeLifecycle, scopeLifecycle)
     }
 
-    func testRoutingInteractor() {
+    @MainActor func testRoutingInteractor() {
+        let scopeLifecycle = ScopeLifecycle()
         let router = Router(scopeLifecycle: scopeLifecycle)
         let interactor = RoutingInteractor(router: router)
         XCTAssertEqual(interactor.scopeLifecycle, scopeLifecycle)
@@ -37,7 +37,9 @@ final class InteractorTests: XCTestCase {
         XCTAssertTrue(scopeLifecycle.subscribers.contains(interactor))
     }
 
-    func testPresentableInteractor() {
+    @MainActor func testPresentableInteractor() {
+        let presenter = TestPresenter()
+        let scopeLifecycle = ScopeLifecycle()
         let interactor = TestPresentableInteractor(scopeLifecycle: scopeLifecycle,
                                                    presenter: presenter)
         XCTAssertEqual(interactor.scopeLifecycle, scopeLifecycle)
@@ -48,7 +50,8 @@ final class InteractorTests: XCTestCase {
         XCTAssertTrue(scopeLifecycle.subscribers.contains(presenter))
     }
 
-    func testPresentableRoutingInteractor() {
+    @MainActor func testPresentableRoutingInteractor() {
+        let scopeLifecycle = ScopeLifecycle()
         let presenter = TestPresenter()
         let router = Router(scopeLifecycle: ScopeLifecycle())
         let interactor = TestPresentableRoutingInteractor(scopeLifecycle: scopeLifecycle,

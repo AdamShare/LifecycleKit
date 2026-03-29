@@ -21,7 +21,7 @@ import NeedleFoundation
 import XCTest
 
 final class ScopeTests: XCTestCase {
-    func testNeedleSharedScope() {
+    @MainActor func testNeedleSharedScope() {
         __DependencyProviderRegistry.instance.registerDependencyProviderFactory(for: "^->BootstrapComponent") { component in
             return EmptyDependencyProvider(component: component)
         }

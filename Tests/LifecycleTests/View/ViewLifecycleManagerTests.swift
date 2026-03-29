@@ -20,7 +20,7 @@ import SwiftUI
 import XCTest
 
 final class ViewLifecycleTests: XCTestCase {
-    func testBind() {
+    @MainActor func testBind() {
         let viewLifecycleOwner = TestViewLifecycleOwner()
 
         XCTAssertEqual(viewLifecycleOwner.viewDidLoadCount, 0)
@@ -64,7 +64,7 @@ final class ViewLifecycleTests: XCTestCase {
         XCTAssertEqual(viewLifecycleOwner.viewDidDisappearCount, 1)
     }
 
-    func testBindAgain_asserts() {
+    @MainActor func testBindAgain_asserts() {
         let viewLifecycleOwner = TestViewLifecycleOwner()
         expectAssertionFailure {
             viewLifecycleOwner.viewLifecycle.subscribe(viewLifecycleOwner)

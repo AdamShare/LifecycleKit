@@ -22,7 +22,7 @@ final class RootLifecycleTests: XCTestCase {
 
     let delegate = Delegate()
 
-    func testDelegates() {
+    @MainActor func testDelegates() {
         XCTAssertFalse(delegate.rootLifecycleOwner.isActive)
 
         delegate.activateRoot()
