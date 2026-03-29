@@ -23,12 +23,14 @@ import SwiftUI
 final class ReferenceLifecycleOwner<ReferenceView>: ObjectIdentifiable, LifecycleOwner, LifecycleOwnerRouting {
     public let scopeLifecycle: ScopeLifecycle = ScopeLifecycle()
     deinit {
-        scopeLifecycle.deactivate()
+        MainActor.assumeIsolated {
+            scopeLifecycle.deactivate()
+        }
     }
 }
 
 /// Type erased `View`.
-public protocol Viewable: AnyObject {
+@MainActor public protocol Viewable: AnyObject {
     /// Wraps in `AnyView`.
     var asAnyView: AnyView { get }
 }
@@ -85,9 +87,9 @@ public final class LifecycleOwnerViewProvider<Content: View>: Viewable {
         childLifecycleBuilder = childLifecycle
     }
 
-    struct LifecycleView<Content: View>: View {
-        let lifecycle: ReferenceLifecycleOwner<Content> = ReferenceLifecycleOwner()
-        let body: Content
+    struct LifecycleView<Body: View>: View {
+        let lifecycle: ReferenceLifecycleOwner<Body> = ReferenceLifecycleOwner()
+        let body: Body
     }
 }
 

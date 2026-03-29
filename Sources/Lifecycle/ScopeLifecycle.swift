@@ -39,18 +39,18 @@ public final class ScopeLifecycle: LifecyclePublisher, ObjectIdentifiable {
 
     public init() {}
 
-    deinit {
-        if isActive {
-            deactivate()
-        }
+    isolated deinit {
+            if isActive {
+                deactivate()
+            }
 
-        for child in children {
-            detachChild(child)
-        }
+            for child in children {
+                detachChild(child)
+            }
 
-        state = .deinitialized
+            state = .deinitialized
 
-        LeakDetector.instance.expectDeallocate(objects: subscribers, inTime: .viewDisappearExpectation).retained.sink()
+            LeakDetector.instance.expectDeallocate(objects: subscribers, inTime: .viewDisappearExpectation).retained.sink()
     }
 
     @DidSetPublished private var state: LifecycleState = .initialized

@@ -18,7 +18,7 @@ import Combine
 import CombineExtensions
 import Foundation
 
-public protocol LifecycleDependent: LifecyclePublisher {
+@MainActor public protocol LifecycleDependent: LifecyclePublisher {
     /// Internal manager of lifecycle events.
     var scopeLifecycle: ScopeLifecycle? { get set }
 }
@@ -30,7 +30,7 @@ public extension LifecycleDependent {
 }
 
 /// Base class to conform to `LifecycleDependent` observing with a weak reference to a `ScopeLifecycle`.
-open class ScopeLifecycleDependent: ObjectIdentifiable, LifecycleDependent, LifecycleOwnerRouting, LifecycleSubscriber {
+@MainActor open class ScopeLifecycleDependent: ObjectIdentifiable, LifecycleDependent, LifecycleOwnerRouting, LifecycleSubscriber {
     public weak var scopeLifecycle: ScopeLifecycle? {
         didSet {
             guard scopeLifecycle !== oldValue else { return }

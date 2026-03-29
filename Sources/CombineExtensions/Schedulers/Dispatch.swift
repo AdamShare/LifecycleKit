@@ -28,6 +28,6 @@ public func syncMain<T>(closure: () -> T) -> T {
 
 /// Submits a work item to the main dispatch queue for asynchronous execution after
 /// a specified time.
-public func asyncMain(delay: TimeInterval = 0, execute work: @escaping () -> Void) {
+public func asyncMain(delay: TimeInterval = 0, execute work: @escaping @Sendable () -> Void) {
     DispatchQueue.main.async(delay: delay, execute: work)
 }

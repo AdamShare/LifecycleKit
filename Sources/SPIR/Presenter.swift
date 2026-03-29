@@ -31,9 +31,9 @@ public protocol Presenting: ViewLifecycleOwner, ViewLifecycleSubscriber {}
 /// The base class of all `Presenter`s. A `Presenter` translates business models into values the corresponding
 /// `View` can consume and display. It also maps UI events to business logic method, invoked to
 /// its listener.
-open class Presenter: BaseViewLifecycleOwner, Presenting {}
+@MainActor open class Presenter: BaseViewLifecycleOwner, Presenting {}
 
-open class InteractablePresenter: Presenter, Interactable, LifecycleSubscriber, LifecycleOwnerRouting {
+@MainActor open class InteractablePresenter: Presenter, Interactable, LifecycleSubscriber, LifecycleOwnerRouting {
     public let scopeLifecycle: ScopeLifecycle
 
     /// Initializer.

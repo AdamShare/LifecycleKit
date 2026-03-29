@@ -25,7 +25,7 @@ import Foundation
         assertClosures.removeFirst()(condition(), message(), file, line)
     }
 
-    var assertClosures: [(_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String, _ file: StaticString, _ line: UInt) -> Void] = []
+    nonisolated(unsafe) var assertClosures: [(_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String, _ file: StaticString, _ line: UInt) -> Void] = []
 
     func assertionFailure(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
         guard !assertionFailureClosures.isEmpty else {
@@ -35,5 +35,5 @@ import Foundation
         assertionFailureClosures.removeFirst()(message(), file, line)
     }
 
-    var assertionFailureClosures: [(@autoclosure () -> String, StaticString, UInt) -> Void] = []
+    nonisolated(unsafe) var assertionFailureClosures: [(@autoclosure () -> String, StaticString, UInt) -> Void] = []
 #endif

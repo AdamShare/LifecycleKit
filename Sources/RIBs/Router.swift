@@ -69,7 +69,7 @@ open class Router<InteractorType>: BaseLifecycleOwner, Routing {
         interactable.scopeLifecycle = scopeLifecycle
     }
 
-    deinit {
+    isolated deinit {
         expectDeallocateIfOwns(interactable as AnyObject)
     }
 

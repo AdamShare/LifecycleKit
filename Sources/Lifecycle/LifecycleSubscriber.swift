@@ -18,7 +18,7 @@ import Combine
 import CombineExtensions
 import Foundation
 
-public protocol LifecycleSubscriber: AnyObject {
+@MainActor public protocol LifecycleSubscriber: AnyObject {
     /// Called when the lifecycle did become active for the first time.
     ///
     /// This method is invoked only once. Subclasses should override this method to perform one time setup logic,

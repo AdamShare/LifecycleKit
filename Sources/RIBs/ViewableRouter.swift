@@ -58,7 +58,7 @@ open class ViewableRouter<InteractorType, ViewControllerType>: Router<Interactor
         }
     }
 
-    deinit {
+    isolated deinit {
         if let viewLifecycleOwner = viewController as? ViewLifecycleOwner {
             expectDeallocateIfOwns(viewLifecycleOwner, inTime: .viewDisappearExpectation)
         }

@@ -160,7 +160,7 @@ open class Worker: Working {
         interactorBindingCancellable = nil
     }
 
-    deinit {
+    isolated deinit {
         stop()
         unbindInteractor()
         isStartedSubject.send(completion: .finished)

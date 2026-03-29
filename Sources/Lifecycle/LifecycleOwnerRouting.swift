@@ -16,7 +16,7 @@
 
 import Foundation
 
-public protocol LifecycleOwnerRouting: AnyObject {
+@MainActor public protocol LifecycleOwnerRouting: AnyObject {
     /// All attached `LifecycleOwner`s.
     var children: [LifecycleOwner] { get }
 

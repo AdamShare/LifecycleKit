@@ -22,7 +22,7 @@ public protocol ViewLifecycleController: LifecycleController,
     ViewLifecycleSubscriber
 {}
 
-open class ViewLifecycleOwnerController: LifecycleOwnerController, ViewLifecycleController {
+@MainActor open class ViewLifecycleOwnerController: LifecycleOwnerController, ViewLifecycleController {
     public let viewLifecycle: ViewLifecycle
 
     public init(scopeLifecycle: ScopeLifecycle = ScopeLifecycle(),

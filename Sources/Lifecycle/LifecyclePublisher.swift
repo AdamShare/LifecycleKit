@@ -32,7 +32,7 @@ public enum LifecycleState: Int, CaseIterable, Hashable {
     case deinitialized
 }
 
-public struct LifecycleStateOptions: OptionSet {
+public struct LifecycleStateOptions: OptionSet, Sendable {
     public static let initialized: LifecycleStateOptions = .init(.initialized)
     public static let active: LifecycleStateOptions = .init(.active)
     public static let inactive: LifecycleStateOptions = .init(.inactive)
@@ -55,7 +55,7 @@ public struct LifecycleStateOptions: OptionSet {
     }
 }
 
-public protocol LifecyclePublisher: AnyObject {
+@MainActor public protocol LifecyclePublisher: AnyObject {
     /// Publisher of `LifecycleState` updates.
     var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> { get }
 }

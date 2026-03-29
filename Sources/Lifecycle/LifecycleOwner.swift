@@ -18,7 +18,7 @@ import Combine
 import CombineExtensions
 import Foundation
 
-public protocol LifecycleOwner: LifecyclePublisher {
+@MainActor public protocol LifecycleOwner: LifecyclePublisher {
     /// Internal manager of lifecycle events.
     var scopeLifecycle: ScopeLifecycle { get }
 }

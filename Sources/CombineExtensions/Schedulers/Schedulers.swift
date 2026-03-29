@@ -48,7 +48,7 @@ public enum Schedulers {
 public extension DispatchQueue {
     /// A scheduler that will perfom the action immediately if the current execution context matches the dispatch queue.
     /// Otherwise the default schedule async to queue is performed.
-    struct Scheduler: Combine.Scheduler {
+    struct Scheduler: Combine.Scheduler, @unchecked Sendable {
         /// In case `schedule` methods are called from `DispatchQueue.main`, it will perform action immediately without scheduling.
         public static let main: Scheduler = .init(.main)
 

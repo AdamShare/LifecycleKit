@@ -18,7 +18,7 @@ import Combine
 import CombineExtensions
 import Foundation
 
-public protocol ViewLifecycleSubscriber: AnyObject {
+@MainActor public protocol ViewLifecycleSubscriber: AnyObject {
     /// Called when the view is first initialized.
     func viewDidLoad()
 

@@ -19,7 +19,7 @@ import CombineExtensions
 import Foundation
 import SwiftUI
 
-public protocol ViewLifecycleOwner: AnyObject {
+@MainActor public protocol ViewLifecycleOwner: AnyObject {
     /// View lifecycle tracking.
     var viewLifecycle: ViewLifecycle { get }
 }
@@ -63,7 +63,7 @@ public extension View {
 }
 
 /// Base class to conform to `ViewLifecycleOwner` observing as the owner of a `ViewLifecycle`.
-open class BaseViewLifecycleOwner: ObjectIdentifiable, ViewLifecycleOwner, ViewLifecycleSubscriber {
+@MainActor open class BaseViewLifecycleOwner: ObjectIdentifiable, ViewLifecycleOwner, ViewLifecycleSubscriber {
     public let viewLifecycle: ViewLifecycle
 
     public init(viewLifecycle: ViewLifecycle = ViewLifecycle()) {

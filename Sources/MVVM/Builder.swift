@@ -30,7 +30,7 @@ public protocol ViewModelProviding {
     var viewModel: ViewModel { get }
 }
 
-public extension ViewLifecycleOwnerViewProviding where Self: ViewModelProviding, ContentView: ViewModelView, ContentView.Model == ViewModel {
+@MainActor public extension ViewLifecycleOwnerViewProviding where Self: ViewModelProviding, ContentView: ViewModelView, ContentView.Model == ViewModel {
     var view: ContentView {
         return ContentView(model: viewModel)
     }
@@ -60,7 +60,7 @@ public extension MVVMComponent {
     }
 }
 
-public extension ViewLifecycleOwnerViewProviding where Self: ViewModelProviding & ControllerProviding, ContentView: ViewModelControllerView, ContentView.Model == ViewModel, ContentView.Controller == Controller {
+@MainActor public extension ViewLifecycleOwnerViewProviding where Self: ViewModelProviding & ControllerProviding, ContentView: ViewModelControllerView, ContentView.Model == ViewModel, ContentView.Controller == Controller {
     var view: ContentView {
         return ContentView(controller: controller, model: viewModel)
     }

@@ -23,4 +23,4 @@ public protocol LifecycleController:
     LifecycleOwnerRouting
 {}
 
-open class LifecycleOwnerController: BaseLifecycleOwner, LifecycleController {}
+@MainActor open class LifecycleOwnerController: BaseLifecycleOwner, LifecycleController {}

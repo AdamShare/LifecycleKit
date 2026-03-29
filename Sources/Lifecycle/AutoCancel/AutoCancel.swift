@@ -25,7 +25,7 @@ public extension Publisher {
     }
 
     /// Completes when any provided lifecycle states are output, or lifecycle publisher completes.
-    func autoCancel<P: Publisher>(_ lifecycleState: P, when states: LifecycleStateOptions = .notActive) -> AutoCancel<Self> where P.Output == LifecycleState {
+    func autoCancel<Upstream: Publisher>(_ lifecycleState: Upstream, when states: LifecycleStateOptions = .notActive) -> AutoCancel<Self> where Upstream.Output == LifecycleState {
         return AutoCancel(source: self, cancelPublisher: lifecycleState.filter(states.contains(state:)).map { _ in () }.replaceError(with: ()).mapError().eraseToAnyPublisher())
     }
 
@@ -96,7 +96,7 @@ public struct AutoCancel<P: Publisher> {
         public var cancellable: AnyCancellable?
         public var events: [Subscribers.Event<Input, Failure>] = []
 
-        public init<P: Publisher>(publisher: AutoCancel<P>) where P.Output == Input, P.Failure == Failure {
+        public init<Upstream: Publisher>(publisher: AutoCancel<Upstream>) where Upstream.Output == Input, Upstream.Failure == Failure {
             let cancellable = publisher.sink(receiveEvent: { [weak self] event in
                 self?.events.append(event)
             })

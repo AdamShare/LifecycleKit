@@ -97,7 +97,9 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
     public init() {}
 
     deinit {
-        state = .deinitialized
+        MainActor.assumeIsolated {
+            state = .deinitialized
+        }
     }
 
     public func setScopeLifecycle(_ scopeLifecycle: ScopeLifecycle) {

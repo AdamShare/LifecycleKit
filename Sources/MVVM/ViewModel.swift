@@ -18,23 +18,23 @@ import Foundation
 import Lifecycle
 import SwiftUI
 
-/// Convenience protocol for a `View ` with only a `ViewModel` dependency.
-public protocol ViewModelView: View {
-    /// `ObservableObject` view model to bind to the `View` .
+/// Convenience protocol for a `View` with only a `ViewModel` dependency.
+@MainActor public protocol ViewModelView: View {
+    /// `ObservableObject` view model to bind to the `View`.
     associatedtype Model: ObservableObject, ViewLifecycleOwner
 
     /// Initializes with an observable object.
     init(model: Model)
 }
 
-/// Convenience protocol for a `View ` with only a `ViewModel` dependency.
-public protocol ViewModelControllerView: View {
+/// Convenience protocol for a `View` with a `ViewController` and `ViewModel` dependency.
+@MainActor public protocol ViewModelControllerView: View {
     /// `ViewLifecycleOwner` view controller.
     associatedtype Controller: ViewLifecycleOwner
 
-    /// `ObservableObject` view model to bind to the `View` .
+    /// `ObservableObject` view model to bind to the `View`.
     associatedtype Model: ObservableObject
 
-    /// Initializes with an lifecycle owner controller and observable object.
+    /// Initializes with a lifecycle owner controller and observable object.
     init(controller: Controller, model: Model)
 }

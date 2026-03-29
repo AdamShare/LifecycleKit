@@ -17,7 +17,7 @@
 import Foundation
 
 /// Type for dependency frameworks such as Needle to conform to and provide a shared lifecycle instance.
-public protocol SharedComponent {
+nonisolated public protocol SharedComponent {
     /// Share the enclosed object as a singleton at this scope. This allows
     /// this scope as well as all child scopes to share a single instance of
     /// the object, for as long as this component lives.

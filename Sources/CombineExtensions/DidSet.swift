@@ -40,7 +40,7 @@ public final class DidSetPublished<Element> {
     }
 
     deinit {
-        relay.send(completion: .finished)
+//        relay.send(completion: .finished)
     }
 }
 

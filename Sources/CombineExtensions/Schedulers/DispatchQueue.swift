@@ -17,7 +17,7 @@
 import Combine
 import Foundation
 
-public struct DispatchQueue: DispatchQueueContext, Scheduler {
+public struct DispatchQueue: DispatchQueueContext, Scheduler, @unchecked Sendable {
     static let reverseDNSPrefix = "com.lifecyclekit."
     
     /// `DispatchQueue.main` underlying queue.
@@ -239,9 +239,9 @@ public struct DispatchQueue: DispatchQueueContext, Scheduler {
 
     #if DEBUG
         public enum TestingOverrides {
-            public static var asyncHandler: ((_ closure: @escaping () -> Void) -> Void)?
-            public static var asyncWorkItemHandler: ((_ workItem: DispatchWorkItem) -> Void)?
-            public static var immediateScheduler: Bool = false
+            nonisolated(unsafe) public static var asyncHandler: ((_ closure: @escaping () -> Void) -> Void)?
+            nonisolated(unsafe) public static var asyncWorkItemHandler: ((_ workItem: DispatchWorkItem) -> Void)?
+            nonisolated(unsafe) public static var immediateScheduler: Bool = false
         }
     #endif
 }

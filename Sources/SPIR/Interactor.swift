@@ -117,7 +117,7 @@ open class PresentableInteractor<PresenterType>: Interactor, PresentableInteract
         viewLifecycle.setScopeLifecycle(scopeLifecycle)
     }
 
-    deinit {
+    isolated deinit {
         expectDeallocateIfOwns(presenter as AnyObject, inTime: .viewDisappearExpectation)
     }
 }
@@ -145,7 +145,7 @@ open class PresentableRoutingInteractor<PresenterType, RouterType>: PresentableI
                    presenter: presenter)
     }
 
-    deinit {
+    isolated deinit {
         expectDeallocateIfOwns(router as AnyObject)
     }
 }

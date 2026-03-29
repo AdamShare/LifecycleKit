@@ -17,11 +17,11 @@
 import Foundation
 import SwiftUI
 
-public protocol ViewableBuildable: AnyObject {
+@MainActor public protocol ViewableBuildable: AnyObject {
     func build() -> Viewable
 }
 
-public protocol LifecycleOwnerViewProviding: ViewableBuildable {
+@MainActor public protocol LifecycleOwnerViewProviding: ViewableBuildable {
     associatedtype ContentView: View
     var lifecycleOwner: LifecycleOwner { get }
     var view: ContentView { get }
@@ -33,7 +33,7 @@ public extension LifecycleOwnerViewProviding {
     }
 }
 
-public protocol ViewLifecycleOwnerViewProviding: ViewableBuildable {
+@MainActor public protocol ViewLifecycleOwnerViewProviding: ViewableBuildable {
     associatedtype ContentView: View
     var lifecycleOwner: LifecycleOwner { get }
     var view: ContentView { get }
